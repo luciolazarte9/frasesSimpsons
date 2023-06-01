@@ -1,13 +1,14 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "./assets/logosimpson.png";
-import { Button, Container } from "react-bootstrap";
+import { Button, Container, Spinner } from "react-bootstrap";
 import Frase from "./components/Frase";
 import { useEffect, useState } from "react";
 
 
 function App() {
   const [personaje, setPersonaje] = useState({});
+  const [mostrarSpinner, setMostrarSpinner] = useState(true);
 
   useEffect(()=> {
     consultarApi();
@@ -16,13 +17,13 @@ function App() {
   const consultarApi = async () => {
 
     try{
-
+      setMostrarSpinner(true)
       const respuesta = await fetch('https://thesimpsonsquoteapi.glitch.me/quotes');
       const datos = await respuesta.json();
       console.log(respuesta);
       console.log(datos[0]);
       setPersonaje(datos[0]);
-
+      setMostrarSpinner(false)
     }catch (error){
 
       console.log(error);
@@ -32,11 +33,16 @@ function App() {
 
   }
 
+  const mostrarComponente = (mostrarSpinner)? (
+    <div className="my-5">
+    <Spinner animation="border" variant="dark" />
+    </div>) : <Frase personaje={personaje}/>
+
   return (
     <>
       <Container className="text-center my-5">
         <img src={logo} alt="Logo de los simpson" className="w-50" />
-        <Frase personaje={personaje} />
+        {mostrarComponente}
         <Button variant="warning" onClick={consultarApi}>
           Get phrase
         </Button>
